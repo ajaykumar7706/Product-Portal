@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Product - Products Management (Talari Ajay Kumar)</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- TOP ANNOUNCEMENT -->
+    <div class="top-announcement">
+        <div class="container top-bar-content">
+            <span><i class="fa-solid fa-graduation-cap"></i> <strong>GPCET Web Tech Lab</strong> &bull; Developer: <strong>Talari Ajay Kumar (24ATAO5332)</strong></span>
+            <span class="db-badge" id="dbStatusBadge"><i class="fa-solid fa-circle-notch fa-spin"></i> Checking DB...</span>
+        </div>
+    </div>
+
+    <!-- NAVBAR -->
+    <header class="navbar">
+        <div class="container nav-content">
+            <a href="index.html" class="brand-logo">
+                <div class="logo-icon"><i class="fa-solid fa-boxes-stacked"></i></div>
+                <div>
+                    <h1 class="logo-title">Product<span>Hub</span></h1>
+                    <p class="logo-sub">Inventory & Catalog Management</p>
+                </div>
+            </a>
+
+            <nav class="nav-links">
+                <a href="index.html"><i class="fa-solid fa-house"></i> Home</a>
+                <a href="add-product.html" class="active"><i class="fa-solid fa-circle-plus"></i> Add Product</a>
+                <a href="update-product.html"><i class="fa-solid fa-pen-to-square"></i> Update Product</a>
+                <a href="search-product.html"><i class="fa-solid fa-magnifying-glass"></i> Search Product</a>
+                <a href="delete-product.html"><i class="fa-solid fa-trash-can"></i> Remove / Delete</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container main-content page-container">
+        <div class="form-card">
+            <div class="form-card-header">
+                <div>
+                    <h2><i class="fa-solid fa-circle-plus"></i> Add New Product</h2>
+                    <p>Insert a new product record directly into MySQL Workbench table <code>products</code></p>
+                </div>
+                <div class="badge-roll">Roll No: 24ATAO5332</div>
+            </div>
+
+            <form class="form-body" id="addProductForm" onsubmit="handleAddProduct(event)">
+                <div class="form-group">
+                    <label for="productId"><i class="fa-solid fa-hashtag"></i> Product ID (Optional)</label>
+                    <input type="number" id="productId" placeholder="Leave empty for auto-generated ID (Auto Increment)">
+                    <small class="field-hint">If left empty, MySQL assigns the next sequential primary key.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="productName"><i class="fa-solid fa-box"></i> Product Name <span style="color:var(--danger)">*</span></label>
+                    <input type="text" id="productName" required placeholder="e.g. Wireless Ergonomic Keyboard">
+                </div>
+
+                <div class="form-group">
+                    <label for="productPrice"><i class="fa-solid fa-indian-rupee-sign"></i> Product Price (₹) <span style="color:var(--danger)">*</span></label>
+                    <input type="number" step="0.01" min="0" id="productPrice" required placeholder="e.g. 4999.00">
+                </div>
+
+                <div class="form-actions">
+                    <a href="index.html" class="btn-secondary"><i class="fa-solid fa-arrow-left"></i> Cancel</a>
+                    <button type="submit" class="btn-primary" id="saveBtn">
+                        <i class="fa-solid fa-floppy-disk"></i> Save Product to Database
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <div id="toast" class="toast">
+        <i id="toastIcon" class="fa-solid fa-circle-check"></i>
+        <span id="toastMsg">Operation successful!</span>
+    </div>
+
+    <footer class="footer">
+        <div class="container footer-content">
+            <p><strong>Products Management Web Application</strong> &bull; Developer: <strong>Talari Ajay Kumar</strong> (Roll No: <strong>24ATAO5332</strong>)</p>
+            <p class="footer-sub">Web Technology Lab &bull; Node.js, Express, MySQL Workbench</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        async function handleAddProduct(e) {
+            e.preventDefault();
+            const saveBtn = document.getElementById('saveBtn');
+            const origText = saveBtn.innerHTML;
+            saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+            saveBtn.disabled = true;
+
+            const productData = {
+                product_id: document.getElementById('productId').value.trim() || undefined,
+                product_name: document.getElementById('productName').value.trim(),
+                product_price: parseFloat(document.getElementById('productPrice').value)
+            };
+
+            try {
+                const res = await fetch('/api/products', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(productData)
+                });
+                const data = await res.json();
+
+                if (!res.ok) throw new Error(data.error || 'Failed to add product');
+
+                showToast(`🎉 Product #${data.product_id} added successfully!`);
+                document.getElementById('addProductForm').reset();
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1200);
+            } catch (err) {
+                showToast(err.message, true);
+            } finally {
+                saveBtn.innerHTML = origText;
+                saveBtn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>

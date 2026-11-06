@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Remove / Delete Product - Products Management (Talari Ajay Kumar)</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <div class="top-announcement">
+        <div class="container top-bar-content">
+            <span><i class="fa-solid fa-graduation-cap"></i> <strong>GPCET Web Tech Lab</strong> &bull; Developer: <strong>Talari Ajay Kumar (24ATAO5332)</strong></span>
+            <span class="db-badge" id="dbStatusBadge"><i class="fa-solid fa-circle-notch fa-spin"></i> Checking DB...</span>
+        </div>
+    </div>
+
+    <header class="navbar">
+        <div class="container nav-content">
+            <a href="index.html" class="brand-logo">
+                <div class="logo-icon"><i class="fa-solid fa-boxes-stacked"></i></div>
+                <div>
+                    <h1 class="logo-title">Product<span>Hub</span></h1>
+                    <p class="logo-sub">Inventory & Catalog Management</p>
+                </div>
+            </a>
+
+            <nav class="nav-links">
+                <a href="index.html"><i class="fa-solid fa-house"></i> Home</a>
+                <a href="add-product.html"><i class="fa-solid fa-circle-plus"></i> Add Product</a>
+                <a href="update-product.html"><i class="fa-solid fa-pen-to-square"></i> Update Product</a>
+                <a href="search-product.html"><i class="fa-solid fa-magnifying-glass"></i> Search Product</a>
+                <a href="delete-product.html" class="active"><i class="fa-solid fa-trash-can"></i> Remove / Delete</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container main-content page-container">
+        <div class="form-card">
+            <div class="form-card-header">
+                <div>
+                    <h2><i class="fa-solid fa-trash-can" style="color:var(--danger)"></i> Remove / Delete Product</h2>
+                    <p>Delete a product permanently from the MySQL Workbench <code>products</code> table</p>
+                </div>
+                <div class="badge-roll">Roll No: 24ATAO5332</div>
+            </div>
+
+            <div class="form-body">
+                <div class="form-group">
+                    <label for="deleteIdInput"><i class="fa-solid fa-hashtag"></i> Enter Product ID to Remove</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="number" id="deleteIdInput" placeholder="e.g. 101" style="flex:1;">
+                        <button type="button" class="btn-primary" onclick="fetchProductForDelete()">
+                            <i class="fa-solid fa-magnifying-glass"></i> Find Product
+                        </button>
+                    </div>
+                </div>
+
+                <!-- PREVIEW & CONFIRM SECTION -->
+                <div id="deletePreviewSection" class="preview-box" style="border-left: 4px solid var(--danger);">
+                    <div style="margin-bottom: 12px; color: var(--danger); font-weight: 700;">
+                        <i class="fa-solid fa-triangle-exclamation"></i> Warning: This action cannot be undone!
+                    </div>
+
+                    <div style="background:#ffffff; border:1px solid var(--border); border-radius:8px; padding:16px; margin-bottom:16px;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                            <span style="color:var(--muted); font-size:0.85rem;">Product ID:</span>
+                            <strong id="previewId" class="product-id-cell">#--</strong>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                            <span style="color:var(--muted); font-size:0.85rem;">Product Name:</span>
+                            <strong id="previewName" style="color:var(--dark);">--</strong>
+                        </div>
+                        <div style="display:flex; justify-content:space-between;">
+                            <span style="color:var(--muted); font-size:0.85rem;">Product Price:</span>
+                            <span id="previewPrice" class="product-price-cell">₹0.00</span>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary" onclick="document.getElementById('deletePreviewSection').classList.remove('show')">
+                            Cancel
+                        </button>
+                        <button type="button" class="btn-danger" id="confirmDeleteBtn" onclick="executeDelete()">
+                            <i class="fa-solid fa-trash-can"></i> Confirm & Delete from Database
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="toast" class="toast">
+        <i id="toastIcon" class="fa-solid fa-circle-check"></i>
+        <span id="toastMsg">Operation successful!</span>
+    </div>
+
+    <footer class="footer">
+        <div class="container footer-content">
+            <p><strong>Products Management Web Application</strong> &bull; Developer: <strong>Talari Ajay Kumar</strong> (Roll No: <strong>24ATAO5332</strong>)</p>
+            <p class="footer-sub">Web Technology Lab &bull; Node.js, Express, MySQL Workbench</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        let targetDeleteId = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get('id');
+            if (id) {
+                document.getElementById('deleteIdInput').value = id;
+                fetchProductForDelete();
+            }
+        });
+
+        async function fetchProductForDelete() {
+            const id = document.getElementById('deleteIdInput').value.trim();
+            if (!id) {
+                showToast('Please enter a Product ID!', true);
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/products/${id}`);
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Product not found');
+
+                targetDeleteId = data.product_id;
+                document.getElementById('previewId').innerText = `#${data.product_id}`;
+                document.getElementById('previewName').innerText = data.product_name;
+                document.getElementById('previewPrice').innerText = formatCurrency(data.product_price);
+
+                document.getElementById('deletePreviewSection').classList.add('show');
+            } catch (err) {
+                showToast(err.message, true);
+                document.getElementById('deletePreviewSection').classList.remove('show');
+            }
+        }
+
+        async function executeDelete() {
+            if (!targetDeleteId) return;
+
+            const btn = document.getElementById('confirmDeleteBtn');
+            const orig = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Deleting...';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch(`/api/products/${targetDeleteId}`, { method: 'DELETE' });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Delete failed');
+
+                showToast(`🗑️ Product #${targetDeleteId} permanently deleted!`);
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1200);
+            } catch (err) {
+                showToast(err.message, true);
+                btn.innerHTML = orig;
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>

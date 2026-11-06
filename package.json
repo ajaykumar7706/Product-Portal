@@ -1,0 +1,18 @@
+{
+  "name": "product-management-system",
+  "version": "1.0.0",
+  "description": "Products Management Web Application - Web Technology Lab (GPCET)",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "keywords": ["products", "mysql", "express", "nodejs", "crud"],
+  "author": "Talari Ajay Kumar (24ATAO5332)",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "mysql2": "^3.12.0"
+  }
+}

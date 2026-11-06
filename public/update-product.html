@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Product - Products Management (Talari Ajay Kumar)</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <div class="top-announcement">
+        <div class="container top-bar-content">
+            <span><i class="fa-solid fa-graduation-cap"></i> <strong>GPCET Web Tech Lab</strong> &bull; Developer: <strong>Talari Ajay Kumar (24ATAO5332)</strong></span>
+            <span class="db-badge" id="dbStatusBadge"><i class="fa-solid fa-circle-notch fa-spin"></i> Checking DB...</span>
+        </div>
+    </div>
+
+    <header class="navbar">
+        <div class="container nav-content">
+            <a href="index.html" class="brand-logo">
+                <div class="logo-icon"><i class="fa-solid fa-boxes-stacked"></i></div>
+                <div>
+                    <h1 class="logo-title">Product<span>Hub</span></h1>
+                    <p class="logo-sub">Inventory & Catalog Management</p>
+                </div>
+            </a>
+
+            <nav class="nav-links">
+                <a href="index.html"><i class="fa-solid fa-house"></i> Home</a>
+                <a href="add-product.html"><i class="fa-solid fa-circle-plus"></i> Add Product</a>
+                <a href="update-product.html" class="active"><i class="fa-solid fa-pen-to-square"></i> Update Product</a>
+                <a href="search-product.html"><i class="fa-solid fa-magnifying-glass"></i> Search Product</a>
+                <a href="delete-product.html"><i class="fa-solid fa-trash-can"></i> Remove / Delete</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container main-content page-container">
+        <!-- STEP 1: SELECT PRODUCT ID -->
+        <div class="form-card">
+            <div class="form-card-header">
+                <div>
+                    <h2><i class="fa-solid fa-pen-to-square"></i> Update Product Details</h2>
+                    <p>Fetch an existing product by Product ID and modify its details in MySQL</p>
+                </div>
+                <div class="badge-roll">Roll No: 24ATAO5332</div>
+            </div>
+
+            <div class="form-body">
+                <div class="form-group">
+                    <label for="searchIdInput"><i class="fa-solid fa-hashtag"></i> Enter Product ID to Update</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="number" id="searchIdInput" placeholder="e.g. 101" style="flex:1;">
+                        <button type="button" class="btn-primary" onclick="fetchProductForUpdate()">
+                            <i class="fa-solid fa-magnifying-glass"></i> Fetch
+                        </button>
+                    </div>
+                </div>
+
+                <!-- UPDATE FORM (DISPLAYED ONCE FETCHED) -->
+                <div id="updateFormSection" class="preview-box">
+                    <h3 style="margin-bottom: 16px; font-size: 1.1rem; color: var(--dark);">
+                        <i class="fa-solid fa-edit"></i> Edit Product #<span id="displayId"></span>
+                    </h3>
+
+                    <form onsubmit="handleUpdateProduct(event)">
+                        <div class="form-group">
+                            <label for="updateName"><i class="fa-solid fa-box"></i> Product Name <span style="color:var(--danger)">*</span></label>
+                            <input type="text" id="updateName" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="updatePrice"><i class="fa-solid fa-indian-rupee-sign"></i> Product Price (₹) <span style="color:var(--danger)">*</span></label>
+                            <input type="number" step="0.01" min="0" id="updatePrice" required>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" class="btn-secondary" onclick="document.getElementById('updateFormSection').classList.remove('show')">
+                                Cancel
+                            </button>
+                            <button type="submit" class="btn-primary" id="updateBtn">
+                                <i class="fa-solid fa-check"></i> Update in Database
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="toast" class="toast">
+        <i id="toastIcon" class="fa-solid fa-circle-check"></i>
+        <span id="toastMsg">Operation successful!</span>
+    </div>
+
+    <footer class="footer">
+        <div class="container footer-content">
+            <p><strong>Products Management Web Application</strong> &bull; Developer: <strong>Talari Ajay Kumar</strong> (Roll No: <strong>24ATAO5332</strong>)</p>
+            <p class="footer-sub">Web Technology Lab &bull; Node.js, Express, MySQL Workbench</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        let currentEditingId = null;
+
+        // Auto load if URL has ?id=...
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get('id');
+            if (id) {
+                document.getElementById('searchIdInput').value = id;
+                fetchProductForUpdate();
+            }
+        });
+
+        async function fetchProductForUpdate() {
+            const id = document.getElementById('searchIdInput').value.trim();
+            if (!id) {
+                showToast('Please enter a Product ID first!', true);
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/products/${id}`);
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Product not found');
+
+                currentEditingId = data.product_id;
+                document.getElementById('displayId').innerText = data.product_id;
+                document.getElementById('updateName').value = data.product_name;
+                document.getElementById('updatePrice').value = data.product_price;
+
+                document.getElementById('updateFormSection').classList.add('show');
+                showToast(`Loaded details for Product #${data.product_id}`);
+            } catch (err) {
+                showToast(err.message, true);
+                document.getElementById('updateFormSection').classList.remove('show');
+            }
+        }
+
+        async function handleUpdateProduct(e) {
+            e.preventDefault();
+            if (!currentEditingId) return;
+
+            const updateBtn = document.getElementById('updateBtn');
+            const orig = updateBtn.innerHTML;
+            updateBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Updating...';
+            updateBtn.disabled = true;
+
+            const updatedData = {
+                product_name: document.getElementById('updateName').value.trim(),
+                product_price: parseFloat(document.getElementById('updatePrice').value)
+            };
+
+            try {
+                const res = await fetch(`/api/products/${currentEditingId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updatedData)
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Failed to update');
+
+                showToast(`✅ Product #${currentEditingId} updated in MySQL Workbench!`);
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1200);
+            } catch (err) {
+                showToast(err.message, true);
+            } finally {
+                updateBtn.innerHTML = orig;
+                updateBtn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>

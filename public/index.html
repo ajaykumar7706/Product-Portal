@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products Management Portal - Web Technology Lab (GPCET)</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- TOP ANNOUNCEMENT BANNER -->
+    <div class="top-announcement">
+        <div class="container top-bar-content">
+            <span><i class="fa-solid fa-graduation-cap"></i> <strong>G. Pullaiah College of Engineering & Technology (GPCET)</strong> &bull; Web Technology Lab &bull; Topic 4: Products</span>
+            <span class="db-badge" id="dbStatusBadge"><i class="fa-solid fa-circle-notch fa-spin"></i> Checking MySQL...</span>
+        </div>
+    </div>
+
+    <!-- MAIN NAVBAR WITH ALL REQUIRED PAGES -->
+    <header class="navbar">
+        <div class="container nav-content">
+            <a href="index.html" class="brand-logo">
+                <div class="logo-icon"><i class="fa-solid fa-boxes-stacked"></i></div>
+                <div>
+                    <h1 class="logo-title">Product<span>Hub</span></h1>
+                    <p class="logo-sub">Inventory & Catalog Management</p>
+                </div>
+            </a>
+
+            <!-- Pages requested: home, add product, remove product, update product, search and Delete Product -->
+            <nav class="nav-links">
+                <a href="index.html" class="active"><i class="fa-solid fa-house"></i> Home</a>
+                <a href="add-product.html"><i class="fa-solid fa-circle-plus"></i> Add Product</a>
+                <a href="update-product.html"><i class="fa-solid fa-pen-to-square"></i> Update Product</a>
+                <a href="search-product.html"><i class="fa-solid fa-magnifying-glass"></i> Search Product</a>
+                <a href="delete-product.html"><i class="fa-solid fa-trash-can"></i> Remove / Delete</a>
+                <a href="add-product.html" class="btn-nav-primary"><i class="fa-solid fa-plus"></i> New Product</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container main-content">
+
+        <!-- HERO SECTION & DEVELOPER PROFILE (TALARI AJAY KUMAR) -->
+        <section class="hero-grid">
+            <!-- Left: Hero Text Card -->
+            <div class="hero-text-card">
+                <span class="badge-tag"><i class="fa-solid fa-server"></i> MySQL Workbench + Node.js Express</span>
+                <h2>Product Catalog & <span class="highlight-text">Inventory Portal</span></h2>
+                <p>
+                    Full-stack database management portal developed for <strong>Topic 4: Products</strong>. Perform real-time CRUD operations directly synchronized with MySQL Workbench table <code>products</code>.
+                </p>
+
+                <div class="quick-stats-row">
+                    <div class="stat-box">
+                        <span class="stat-number" id="totalProductsCount">0</span>
+                        <span class="stat-label">Total Products</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-number" id="totalInventoryValue">₹0.00</span>
+                        <span class="stat-label">Inventory Worth</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-number" id="avgPriceBadge">₹0.00</span>
+                        <span class="stat-label">Avg Product Price</span>
+                    </div>
+                </div>
+
+                <div class="hero-actions">
+                    <a href="add-product.html" class="btn-primary"><i class="fa-solid fa-circle-plus"></i> Add New Product</a>
+                    <a href="search-product.html" class="btn-secondary"><i class="fa-solid fa-magnifying-glass"></i> Search Products</a>
+                    <button class="btn-secondary" onclick="loadProducts()"><i class="fa-solid fa-arrows-rotate"></i> Refresh Data</button>
+                </div>
+            </div>
+
+            <!-- Right: Developer Student Card (Talari Ajay Kumar - 24ATAO5332) -->
+            <div class="student-card">
+                <div class="student-avatar-wrap">
+                    <img src="images/ajay.svg" alt="Talari Ajay Kumar" class="student-avatar" onerror="this.src='https://ui-avatars.com/api/?name=Talari+Ajay+Kumar&background=0284c7&color=fff&size=150'">
+                    <span class="active-badge" title="Developer Active"><i class="fa-solid fa-check"></i></span>
+                </div>
+                <h3 class="student-name">Talari Ajay Kumar</h3>
+                <p class="student-role"><i class="fa-solid fa-id-card-clip"></i> Full Stack Developer</p>
+                <div class="student-details-list">
+                    <div class="detail-item">
+                        <span class="detail-label">Roll Number:</span>
+                        <span class="detail-val badge-roll">24ATAO5332</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Institution:</span>
+                        <span class="detail-val">GPCET</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Assigned Topic:</span>
+                        <span class="detail-val badge-topic">4. Products</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Database:</span>
+                        <span class="detail-val">MySQL Workbench</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- QUICK ACTION TILES TO ALL PAGES -->
+        <section class="action-tiles-grid">
+            <a href="add-product.html" class="action-tile">
+                <div class="tile-icon tile-add"><i class="fa-solid fa-plus"></i></div>
+                <div class="tile-text">
+                    <h4>Add Product</h4>
+                    <p>Insert new product record</p>
+                </div>
+            </a>
+            <a href="update-product.html" class="action-tile">
+                <div class="tile-icon tile-update"><i class="fa-solid fa-pen-to-square"></i></div>
+                <div class="tile-text">
+                    <h4>Update Product</h4>
+                    <p>Modify name & price</p>
+                </div>
+            </a>
+            <a href="search-product.html" class="action-tile">
+                <div class="tile-icon tile-search"><i class="fa-solid fa-magnifying-glass"></i></div>
+                <div class="tile-text">
+                    <h4>Search Product</h4>
+                    <p>Look up by ID or title</p>
+                </div>
+            </a>
+            <a href="delete-product.html" class="action-tile">
+                <div class="tile-icon tile-delete"><i class="fa-solid fa-trash-can"></i></div>
+                <div class="tile-text">
+                    <h4>Remove / Delete</h4>
+                    <p>Remove product from table</p>
+                </div>
+            </a>
+        </section>
+
+        <!-- TABLE SECTION: EXACT HEADINGS (product ID, Product Name, product Price) -->
+        <section class="controls-panel" id="products-table-section">
+            <div class="controls-header">
+                <div>
+                    <h3 class="section-title"><i class="fa-solid fa-database"></i> Products Master Table</h3>
+                    <p class="section-subtitle">Synced with MySQL Workbench table <code>products</code></p>
+                </div>
+                <div class="hero-actions">
+                    <a href="add-product.html" class="btn-primary"><i class="fa-solid fa-plus"></i> Add Product</a>
+                </div>
+            </div>
+
+            <div class="search-filter-bar">
+                <div class="search-input-wrap">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    <input type="text" id="searchInput" placeholder="Filter by Product ID, Name, or Price..." onkeyup="filterProducts()">
+                </div>
+            </div>
+        </section>
+
+        <section class="table-card">
+            <div class="table-responsive">
+                <table class="styled-table" id="productsTable">
+                    <thead>
+                        <tr>
+                            <th><i class="fa-solid fa-hashtag"></i> Product ID</th>
+                            <th><i class="fa-solid fa-box"></i> Product Name</th>
+                            <th><i class="fa-solid fa-indian-rupee-sign"></i> Product Price</th>
+                            <th class="text-center"><i class="fa-solid fa-gear"></i> Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="productsTableBody">
+                        <tr>
+                            <td colspan="4" class="loading-td">
+                                <i class="fa-solid fa-spinner fa-spin"></i> Loading products from MySQL database...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast" class="toast">
+        <i id="toastIcon" class="fa-solid fa-circle-check"></i>
+        <span id="toastMsg">Operation successful!</span>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container footer-content">
+            <p><strong>Products Management Web Application</strong> &bull; Developer: <strong>Talari Ajay Kumar</strong> (Roll No: <strong>24ATAO5332</strong>)</p>
+            <p class="footer-sub">Web Technology Lab &bull; Node.js, Express, MySQL Workbench, HTML5 & CSS3</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <linearGradient id="bgGradAjay" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0284c7" />
+      <stop offset="100%" stop-color="#0f172a" />
+    </linearGradient>
+    <clipPath id="circleClipAjay">
+      <circle cx="100" cy="100" r="95" />
+    </clipPath>
+  </defs>
+
+  <!-- Background Circle with Outline -->
+  <circle cx="100" cy="100" r="98" fill="url(#bgGradAjay)" stroke="#38bdf8" stroke-width="4" />
+
+  <g clip-path="url(#circleClipAjay)">
+    <!-- Shoulders / Suit Jacket -->
+    <path d="M35 210 C45 145, 70 135, 100 135 C130 135, 155 145, 165 210 Z" fill="#1e293b" />
+    <!-- Formal Shirt Collar -->
+    <polygon points="100,165 80,135 120,135" fill="#f8fafc" />
+    <!-- Professional Tie -->
+    <polygon points="96,140 104,140 108,185 100,195 92,185" fill="#0284c7" />
+
+    <!-- Neck -->
+    <rect x="90" y="112" width="20" height="26" fill="#e2b18a" rx="4" />
+
+    <!-- Hair Back -->
+    <ellipse cx="100" cy="80" rx="48" ry="50" fill="#09090b" />
+
+    <!-- Face -->
+    <ellipse cx="100" cy="90" rx="35" ry="40" fill="#f4caa1" />
+
+    <!-- Modern Short Hairstyle -->
+    <path d="M60 75 Q100 45 140 75 Q145 92 140 100 C138 82 125 65 100 65 C75 65 62 82 60 100 Z" fill="#09090b" />
+
+    <!-- Eyebrows -->
+    <path d="M78 80 Q85 76 92 80" stroke="#09090b" stroke-width="3" fill="none" stroke-linecap="round" />
+    <path d="M108 80 Q115 76 122 80" stroke="#09090b" stroke-width="3" fill="none" stroke-linecap="round" />
+
+    <!-- Eyes -->
+    <circle cx="85" cy="88" r="4.5" fill="#0f172a" />
+    <circle cx="115" cy="88" r="4.5" fill="#0f172a" />
+    <circle cx="86.5" cy="86.5" r="1.5" fill="#ffffff" />
+    <circle cx="116.5" cy="86.5" r="1.5" fill="#ffffff" />
+
+    <!-- Nose -->
+    <path d="M100 90 L98 100 L103 100" stroke="#d49a6a" stroke-width="2" fill="none" stroke-linecap="round" />
+
+    <!-- Confident Smile -->
+    <path d="M90 108 Q100 118 110 108" stroke="#b91c1c" stroke-width="2.5" fill="none" stroke-linecap="round" />
+
+    <!-- Roll No ID Badge Pin -->
+    <rect x="68" y="172" width="64" height="18" rx="4" fill="#0369a1" stroke="#38bdf8" stroke-width="1.5" />
+    <text x="100" y="184" fill="#ffffff" font-size="8" font-weight="bold" font-family="sans-serif" text-anchor="middle">24ATAO5332</text>
+  </g>
+
+  <!-- Green Active Dot -->
+  <circle cx="150" cy="150" r="13" fill="#10b981" stroke="#ffffff" stroke-width="3" />
+</svg>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Products - Products Management (Talari Ajay Kumar)</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <div class="top-announcement">
+        <div class="container top-bar-content">
+            <span><i class="fa-solid fa-graduation-cap"></i> <strong>GPCET Web Tech Lab</strong> &bull; Developer: <strong>Talari Ajay Kumar (24ATAO5332)</strong></span>
+            <span class="db-badge" id="dbStatusBadge"><i class="fa-solid fa-circle-notch fa-spin"></i> Checking DB...</span>
+        </div>
+    </div>
+
+    <header class="navbar">
+        <div class="container nav-content">
+            <a href="index.html" class="brand-logo">
+                <div class="logo-icon"><i class="fa-solid fa-boxes-stacked"></i></div>
+                <div>
+                    <h1 class="logo-title">Product<span>Hub</span></h1>
+                    <p class="logo-sub">Inventory & Catalog Management</p>
+                </div>
+            </a>
+
+            <nav class="nav-links">
+                <a href="index.html"><i class="fa-solid fa-house"></i> Home</a>
+                <a href="add-product.html"><i class="fa-solid fa-circle-plus"></i> Add Product</a>
+                <a href="update-product.html"><i class="fa-solid fa-pen-to-square"></i> Update Product</a>
+                <a href="search-product.html" class="active"><i class="fa-solid fa-magnifying-glass"></i> Search Product</a>
+                <a href="delete-product.html"><i class="fa-solid fa-trash-can"></i> Remove / Delete</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container main-content page-container" style="max-width: 900px;">
+        <div class="form-card">
+            <div class="form-card-header">
+                <div>
+                    <h2><i class="fa-solid fa-magnifying-glass"></i> Search Products</h2>
+                    <p>Search by Product ID or Product Name from MySQL database</p>
+                </div>
+                <div class="badge-roll">Roll No: 24ATAO5332</div>
+            </div>
+
+            <div class="form-body">
+                <div class="form-group">
+                    <label for="productSearchQuery"><i class="fa-solid fa-search"></i> Enter Search Keyword or ID</label>
+                    <div style="display:flex; gap:10px;">
+                        <input type="text" id="productSearchQuery" placeholder="e.g. 102 or iPhone or Dell..." onkeyup="executeSearch()" style="flex:1;">
+                        <button type="button" class="btn-primary" onclick="executeSearch()">
+                            <i class="fa-solid fa-search"></i> Search
+                        </button>
+                    </div>
+                </div>
+
+                <!-- RESULTS TABLE -->
+                <div id="searchResultsSection" style="margin-top: 24px;">
+                    <div class="table-card">
+                        <div class="table-responsive">
+                            <table class="styled-table">
+                                <thead>
+                                    <tr>
+                                        <th>Product ID</th>
+                                        <th>Product Name</th>
+                                        <th>Product Price</th>
+                                        <th class="text-center">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="searchResultsBody">
+                                    <tr>
+                                        <td colspan="4" class="empty-td">
+                                            <i class="fa-solid fa-keyboard"></i> Type an ID or keyword above to find products.
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="toast" class="toast">
+        <i id="toastIcon" class="fa-solid fa-circle-check"></i>
+        <span id="toastMsg">Operation successful!</span>
+    </div>
+
+    <footer class="footer">
+        <div class="container footer-content">
+            <p><strong>Products Management Web Application</strong> &bull; Developer: <strong>Talari Ajay Kumar</strong> (Roll No: <strong>24ATAO5332</strong>)</p>
+            <p class="footer-sub">Web Technology Lab &bull; Node.js, Express, MySQL Workbench</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        async function executeSearch() {
+            const query = document.getElementById('productSearchQuery').value.trim();
+            const tbody = document.getElementById('searchResultsBody');
+
+            if (!query) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="empty-td">
+                            <i class="fa-solid fa-keyboard"></i> Type an ID or keyword above to find products.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/products?q=${encodeURIComponent(query)}`);
+                const data = await res.json();
+
+                if (data.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="4" class="empty-td">
+                                <i class="fa-solid fa-circle-xmark"></i> No products found matching "${escapeHtml(query)}".
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                tbody.innerHTML = data.map(p => `
+                    <tr>
+                        <td><span class="product-id-cell">#${p.product_id}</span></td>
+                        <td><span class="product-name-cell">${escapeHtml(p.product_name)}</span></td>
+                        <td><span class="product-price-cell">${formatCurrency(p.product_price)}</span></td>
+                        <td class="text-center">
+                            <a href="update-product.html?id=${p.product_id}" class="btn-sm-edit"><i class="fa-solid fa-pen"></i> Edit</a>
+                            <a href="delete-product.html?id=${p.product_id}" class="btn-sm-delete"><i class="fa-solid fa-trash"></i> Delete</a>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (err) {
+                showToast('Search failed: ' + err.message, true);
+            }
+        }
+    </script>
+</body>
+</html>
